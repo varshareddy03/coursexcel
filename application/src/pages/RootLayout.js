@@ -6,7 +6,7 @@ function RootLayout() {
   return (
     <div>
       <Navbar />
-      <Outlet />
+        <Outlet />
     </div>
   );
 }

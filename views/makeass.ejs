@@ -1,0 +1,24 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourseXcel</title>
+</head>
+<body>
+    <h1>Teacher Post</h1>
+    Subject ID: <%= subject.sub_id %>
+    <form action="/makeass" method="post" enctype="multipart/form-data">
+        <label for="pdfFile">Upload PDF:</label>
+        <input type="file" id="pdfFile" name="pdfFile">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name">
+        <input type="date" id="date_posted" name="date_posted">
+        <input type="text" id="sub_id" name="sub_id" style="display : none" value= <%= subject.sub_id %> >
+        <label for="unit">Unit:</label>
+        <input type="text" id="unit" name="unit">
+        <input type="submit" value="Upload">
+    </form>
+    <a href="/teahome">Cancel</a>
+</body>
+</html>

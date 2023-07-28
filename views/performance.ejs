@@ -1,0 +1,57 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourseXcel Performance</title>
+    <!-- Include Chart.js library from a CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Performance Report for <%= student.name %></h1>
+
+    <% subjects_taken.forEach(function(subject) { %>
+        <h2><%= subject.name %></h2>
+        <canvas id="chart-<%= subject.sub_id %>" width="200" height="200"></canvas>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Get marks data for the current subject
+                const marksData = <%= JSON.stringify(subject.marks) %>;
+                const unitLabels = marksData.map(item => item.unit);
+                const marks = marksData.map(item => item.marks);
+
+                // Chart.js configuration
+                const chartConfig = {
+                    type: 'bar',
+                    data: {
+                        labels: unitLabels,
+                        datasets: [{
+                            label: 'Marks Obtained',
+                            data: marks,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // Set to false to control chart size using canvas width and height
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                };
+
+                // Create and render the chart
+                const ctx = document.getElementById('chart-<%= subject.sub_id %>').getContext('2d');
+                new Chart(ctx, chartConfig);
+            });
+        </script>
+    <% }); %>
+
+    <a href="/stuhome">Back to Home</a>
+</body>
+</html>

@@ -3,6 +3,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>CourseXcel</title>
 </head>
 <body>
@@ -10,6 +11,38 @@
     <h1>Welcome, <%= student.name %></h1>
     <p>Student ID: <%= student.s_id %></p>
     <p>Class ID: <%= student.class_id %></p>
-    <a href="/logout">Logout</a>
+        <ul>
+            <% subjects_taken.forEach(function(subject) { %>
+              <li> Subject ID: <%= subject.sub_id %> | Name: <%= subject.name %> </li>
+              <h5>Posts:</h5>
+              <ul>
+                <% posts.forEach(function(post) { %>
+                    <% if(post.sub_id == subject.sub_id){ %>
+                        <li>
+                            Post ID: <%= post.post_id %> | Post Name: <%= post.name %> | Unit: <%= post.unit %>
+                            <a href="<%= post.file %>">Download PDF</a>
+                        </li>
+                     <% } %>
+                  <% }); %>
+                </ul>
+                <h5>Assignments:</h5>
+                <ul>
+                    <% assignments.forEach(function(assignment) { %>
+                        <% if(assignment.sub_id == subject.sub_id){ %>
+                            <li>
+                                Assign ID: <%= assignment.ass_id %> | Name: <%= assignment.name %> | Unit: <%= assignment.unit %> | Marks : <%= assignment.marks %> | Date posted : <%= assignment.date_posted %> | Submission date : <%= assignment.date_submission %>
+                                <a href="<%=assignment.file %>">Download PDF</a>
+                                <a href="/makesubs?ass_id=<%= assignment.ass_id %>&sub_id=<%= subject.sub_id %>&unit=<%= assignment.unit %>&s_id=<%= student.s_id %>">Make Submission</a>
+                            </li>
+                         <% } %>
+                      <% }); %>
+                    </ul>
+            <% }); %>
+          </ul>
+          <h2>Performance:</h2>
+          <a href="/performance">View Performance Report</a>
+          <br>
+        <a href="/logout">Logout</a>
+    
 </body>
 </html>

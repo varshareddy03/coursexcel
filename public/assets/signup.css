@@ -1,0 +1,84 @@
+body {
+    background: #006f73 !important;
+	font-family: Helvetica Neue,Helvetica,Arial,sans-serif; 
+    letter-spacing: 0.1em;
+    font-weight: normal;
+    font-style: normal;
+    color: black!important;
+}
+
+.blurb h2 {
+   color: black;
+   font-weight: 600;
+   font-size: 2rem;
+   letter-spacing: 0.1em;
+}
+
+.blurb p {
+    color: black;
+    font-weight: 100;
+    font-size: 1.125rem;
+    line-height: 2;
+    letter-spacing: 0.1em;
+
+}
+
+.content {
+    margin-top: 100px;
+    margin-bottom: 100px;
+    letter-spacing: 0.1em;
+
+}
+.logo-image{
+    width: 46px;
+    height: 46px;
+    overflow: hidden;
+    margin: 7px 5px;
+}
+#mainNavbar {
+    background:#5CE1E6;
+    font-size: 1.2rem;
+    font-weight: 600; 
+    letter-spacing: 0.1em;
+   
+}
+
+#mainNavbar .nav-link {
+    color: white;
+}
+
+#mainNavbar .nav-link:hover {
+    color: #1F1D36;
+}
+
+#mainNavbar .navbar-brand {
+    color: #1F1D36;
+    font-size: 1.5rem;
+}
+
+#headingGroup h1 {
+    font-weight: 300;
+    font-size: 4rem;
+}
+
+.navbar.scrolled {
+    background: rgb(222,192,222);
+    transition: background 500ms;
+}
+
+/* @media (max-width: 900px) {
+    /* #headingGroup{
+        font-weight: 100;
+        font-size: 3rem;
+        letter-spacing: 0.1em;
+
+    }
+    .blurb h2 {
+        font-size: 2rem;
+        letter-spacing: 0.1em;
+
+    } */
+    .row{
+        flex-direction: row;
+    }
+/* }  */

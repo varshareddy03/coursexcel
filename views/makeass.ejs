@@ -13,10 +13,15 @@
         <input type="file" id="pdfFile" name="pdfFile">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name">
+        <label for="name">Date posted:</label>
         <input type="date" id="date_posted" name="date_posted">
+        <label for="name">Deadline:</label>
+        <input type="date" id="date_submission" name="date_submission">
         <input type="text" id="sub_id" name="sub_id" style="display : none" value= <%= subject.sub_id %> >
         <label for="unit">Unit:</label>
         <input type="text" id="unit" name="unit">
+        <label for="unit">Marks:</label>
+        <input type="number" id="marks" name="marks">
         <input type="submit" value="Upload">
     </form>
     <a href="/teahome">Cancel</a>

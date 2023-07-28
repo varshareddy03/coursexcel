@@ -1,0 +1,21 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourseXcel</title>
+</head>
+<body>
+    <h1>Make Submission</h1>
+    <form action="/submitass" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="s_id" value="<%= student.s_id %>">
+        <input type="hidden" name="sub_id" value="<%= assignment.sub_id %>">
+        <input type="hidden" name="unit" value="<%= assignment.unit %>">
+        <input type="hidden" name="ass_id" value="<%= assignment.ass_id %>">
+        <label for="pdfFile">Upload Submission:</label>
+        <input type="file" id="pdfFile" name="pdfFile">
+        <input type="submit" value="Submit">
+    </form>
+    <a href="/stuhome">Cancel</a>
+</body>
+</html>

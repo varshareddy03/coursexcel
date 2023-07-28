@@ -10,7 +10,7 @@
     <p>Teacher ID: <%= teacher.t_id %></p>
     <ul>
         <% subjects_handling.forEach(function(subject) { %>
-          <li> Subject ID: <%= subject.sub_id %> | Name: <%= subject.name %> | Class ID: <%= subject.class_id %></li> <a href="/teapost?subject_id=<%= subject.sub_id %>">Post</a><br><a href="/makeass?subject_id=<%= subject.sub_id %>">Make a assignment</a>
+          <li> Subject ID: <%= subject.sub_id %> | Name: <%= subject.name %> | Class ID: <%= subject.class_id %></li> <a href="/teapost?subject_id=<%= subject.sub_id %>">Post</a><br><a href="/makeass?subject_id=<%= subject.sub_id %>">Make an assignment</a>
           <ul>
             <% posts.forEach(function(post) { %>
                 <% if(post.sub_id == subject.sub_id){ %>
@@ -24,6 +24,20 @@
                  <% } %>
               <% }); %>
             </ul>
+            <ul>
+                <% assignments.forEach(function(assignment) { %>
+                    <% if(assignment.sub_id == subject.sub_id){ %>
+                        <li>
+                            Assign ID: <%= assignment.ass_id %> | Name: <%= assignment.name %> | Unit: <%= assignment.unit %> | Marks : <%= assignment.marks %> | Date posted : <%= assignment.date_posted %> | Submission date : <%= assignment.date_submission %>
+                            <a href="<%=assignment.file %>">Download PDF</a>
+                            <form action="/deleteass?ass_id=<%= assignment.ass_id %>&subject_id=<%= subject.sub_id %>" method="post">
+                                <button type="submit">Delete</button>
+                            </form>
+                            <a href="/viewsubmissions?ass_id=<%= assignment.ass_id %>">View Submissions</a>
+                        </li>
+                     <% } %>
+                  <% }); %>
+                </ul>
         <% }); %>
       </ul>
     <a href="/logout">Logout</a>

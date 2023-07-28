@@ -18,7 +18,7 @@ db.on("error", console.error.bind(console,"connection error:"));
 db.once("open", () => {
     console.log("Database connected!");
 });
-
+app.use(express.static(__dirname));
 app.use(express.urlencoded({extended : true}));
 app.use(session({
     secret: 'your secret', // Replace with a strong secret for production
@@ -59,7 +59,7 @@ const Subject = require('./models/subject');
 const Post = require('./models/post');
 const Assignment = require('./models/assignment');
 const Submission = require('./models/submission');
-const subject = require('./models/subject');
+const Mark = require('./models/marks');
 
 app.post('/signup', async (req, res) => {
     const pss = req.body.password1;
@@ -132,9 +132,9 @@ app.get('/teahome', async(req, res) => {
         const tea = await Teacher.findOne({_id : req.session.user_id});
         if (tea){
             const subs = await Subject.find({t_id : tea.t_id});
-            const posts = await Post.find(); 
-            console.log(posts);
-            res.render('teahome',{teacher : tea, subjects_handling : subs, posts})
+            const posts = await Post.find().sort({unit : 1}); 
+            const assignments = await Assignment.find().sort({unit : 1}); 
+            res.render('teahome',{teacher : tea, subjects_handling : subs, posts, assignments})
         }
     }
     else{
@@ -167,6 +167,30 @@ app.get('/teapost', async(req, res) => {
 
   res.render('makeass', { subject });
   });
+  app.post('/makeass', upload.single('pdfFile'), async (req, res) => {
+    if (!req.file) {
+      return res.status(400).send('No file uploaded.');
+    }
+    const { name, unit, sub_id, marks, date_posted, date_submission } = req.body;
+    //const sub_id = req.query.subject._id; // Extract subject_id from the query parameter
+
+  if (!sub_id) {
+    return res.status(400).send('Subject ID not provided.');
+  }
+    const ass_id = 'A' + randomBytes(3).toString('hex').toUpperCase();
+    const assignment = new Assignment({
+      ass_id: ass_id, 
+      name: name, 
+      sub_id: sub_id, 
+      file: req.file.path, 
+      unit: unit,
+      marks : marks,
+      date_posted : date_posted,
+      date_submission : date_submission,
+    });
+    await assignment.save();
+    res.redirect('/teahome'); 
+  });
   app.post('/teapost', upload.single('pdfFile'), async (req, res) => {
     if (!req.file) {
       return res.status(400).send('No file uploaded.');
@@ -195,12 +219,21 @@ app.get('/teapost', async(req, res) => {
     await Post.findOneAndDelete({ post_id, sub_id: subject_id });
     res.redirect('/teahome');
 });
+app.post('/deleteass', async (req, res) => {
+    const ass_id = req.query.ass_id;
+    const subject_id = req.query.subject_id;
+    await Assignment.findOneAndDelete({ ass_id, sub_id: subject_id });
+    res.redirect('/teahome');
+});
 
 app.get('/stuhome',async(req, res) => {
     if (req.session.user_id){
         const stu = await Student.findOne({_id : req.session.user_id});
         if (stu){
-        res.render('stuhome',{student : stu})
+        const subs = await Subject.find({class_id : stu.class_id});
+        const posts = await Post.find().sort({unit : 1}); 
+        const assignments = await Assignment.find().sort({unit : 1});
+        res.render('stuhome',{student : stu, subjects_taken : subs, posts, assignments})
         }
 
     }
@@ -209,6 +242,112 @@ app.get('/stuhome',async(req, res) => {
     }
     //res.render('stuhome')
 })
+
+app.get('/makesubs', async (req, res) => {
+    const { ass_id, sub_id, unit, s_id } = req.query;
+    try {
+      // Get the student data from the database based on the s_id
+      const student = await Student.findOne({s_id : s_id });
+      const assignment = await Assignment.findOne({ass_id : ass_id});
+      if (!student) {
+        return res.status(404).send('Student not found.');
+      }
+  
+      // Pass the student data along with the other required data to the makesubs.ejs template
+      res.render('makesubs', { assignment, student });
+    } catch (error) {
+      console.error('Error rendering makesubs page:', error);
+      res.status(500).send('Failed to render makesubs page.');
+    }
+  });
+
+  app.post('/submitass', upload.single('pdfFile'), async (req, res) => {
+    const { s_id, ass_id, sub_id, unit} = req.body;
+    const file = req.file.path; // Assuming the submitted file is uploaded using multer
+  
+    try {
+      const submi_id = 'S' + randomBytes(3).toString('hex').toUpperCase();
+      const submission = new Submission({
+        submi_id: submi_id, // Implement your own function to generate a unique ID for submission
+        s_id,
+        ass_id,
+        file,
+        sub_id,
+        unit,
+        date_submitted : new Date(),
+      });
+  
+      await submission.save();
+      const mark = new Mark({
+        s_id: s_id,
+        ass_id : ass_id,  
+        sub_id: sub_id, 
+        unit: unit,
+        marks : 0,
+      });
+      await mark.save();
+  
+      // Redirect to the student's home page after submission
+      res.redirect('/stuhome');
+    } catch (error) {
+      console.error('Error submitting assignment:', error);
+      res.status(500).send('Failed to submit assignment.');
+    }
+  });
+
+  app.get('/viewsubmissions', async (req, res) => {
+    const { ass_id } = req.query;
+
+    try {
+        // Find the assignment details based on ass_id
+        const assignment = await Assignment.findOne({ ass_id });
+        if (!assignment) {
+            return res.status(404).send('Assignment not found.');
+        }
+
+        // Find all submissions for the specific assignment
+        const submissions = await Submission.find({ ass_id });
+
+        res.render('viewsubmissions', { assignment, submissions });
+    } catch (error) {
+        console.error('Error fetching submissions:', error);
+        res.status(500).send('Failed to fetch submissions.');
+    }
+});
+
+app.post('/updatemarks', async (req, res) => {
+    const { submi_id, marks_obtained } = req.body;
+
+    try {
+        // Find the submission based on submi_id
+        const submission = await Submission.findOne({ submi_id });
+        if (!submission) {
+            return res.status(404).send('Submission not found.');
+        }
+
+        // Ensure the marks_obtained is within the valid range (0 to assignment.marks)
+        const assignment = await Assignment.findOne({ ass_id: submission.ass_id });
+        if (!assignment) {
+            return res.status(404).send('Assignment not found.');
+        }
+        const maxMarks = assignment.marks;
+        if (marks_obtained < 0 || marks_obtained > maxMarks) {
+            return res.status(400).send(`Marks obtained should be between 0 and ${maxMarks}.`);
+        }
+        const mark = await Mark.findOne({ s_id : submission.s_id, ass_id : submission.ass_id  });
+        
+        // Update the marks_obtained field in the submission
+        submission.marks_obtained = marks_obtained;
+        mark.marks = marks_obtained;
+        await submission.save();
+        await mark.save();
+
+        res.redirect('/teahome');
+    } catch (error) {
+        console.error('Error updating marks:', error);
+        res.status(500).send('Failed to update marks.');
+    }
+});
 
 app.get('/logout', (req, res) => {
     req.session.destroy((err) => {

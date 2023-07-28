@@ -1,0 +1,26 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourseXcel</title>
+</head>
+<body>
+    <h1>Submissions for Assignment: <%= assignment.name %></h1>
+    <ul>
+        <% submissions.forEach(function(submission) { %>
+            <li>
+                Submission ID: <%= submission.submi_id %> | Student ID: <%= submission.s_id %> | Marks Obtained: <%= submission.marks_obtained %> | Date Submitted: <%= submission.date_submitted %>
+                <a href="<%= submission.file %>">Download Submission</a>
+                <form action="/updatemarks" method="post">
+                    <input type="hidden" name="submi_id" value="<%= submission.submi_id %>">
+                    <label for="marks_obtained">Marks Obtained:</label>
+                    <input type="number" id="marks_obtained" name="marks_obtained" value="<%= submission.marks_obtained %>" min="0" max="<%= assignment.marks %>">
+                    <input type="submit" value="Update Marks">
+                </form>
+            </li>
+        <% }); %>
+    </ul>
+    <a href="/teahome">Back to Teacher Home</a>
+</body>
+</html>
